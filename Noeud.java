@@ -4,13 +4,20 @@ import java.io.File;
 
 public abstract class Noeud {
 	
-	Noeud parent;
 	File nom;
+    static int niveau = 0;
 	
-	public Noeud(Noeud parent, File nom) {
-		this.parent = parent;
+	public Noeud(File nom) {
 		this.nom = nom;
 	}
 	
 	public abstract String toString();
+	
+	public String addSpace() {
+		char[] buffer = new char[niveau*2];
+		for (int i = 0; i < niveau*2; i++) {
+			buffer[i] = ' ';
+		}
+		return new String(buffer);
+	}
 }

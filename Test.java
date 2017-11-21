@@ -8,20 +8,28 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+/**
+ * Exemple du parton Composite
+ * @author Vincent Lacasse
+ *
+ */
 public class Test extends JFrame {
 
-	private JPanel contentPane;
-	private Noeud base;
-
+	private JButton btnChoisir;
+	private JButton btnFermer;
+	private JTextArea txtResultat;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -39,12 +47,22 @@ public class Test extends JFrame {
 	}
 
 	/**
-	 * Create the frame.
+	 * Construire l'écran et assigner une action aux deux boutons
 	 */
 	public Test() {
+		buildScreen();
+		btnChoisir.setAction(new ActionChoisir());
+		btnFermer.setAction(new ActionFermer());
+	}
+	
+	/**
+	 * Contruire l'écran
+	 */
+	private void buildScreen() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
-		contentPane = new JPanel();
+		
+		JPanel contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
@@ -53,37 +71,61 @@ public class Test extends JFrame {
 		contentPane.add(panel, BorderLayout.SOUTH);
 		panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
-		JButton btnChoisir = new JButton("Choisir");
+		btnChoisir = new JButton();
 		panel.add(btnChoisir);
 		
-		JButton btnFermer = new JButton("Fermer");
+		btnFermer = new JButton();
 		panel.add(btnFermer);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		contentPane.add(scrollPane, BorderLayout.CENTER);
 		
-		JTextArea txtrResultat = new JTextArea();
-		scrollPane.setViewportView(txtrResultat);
+		txtResultat = new JTextArea();
+		txtResultat.setFont(new Font("monospaced", Font.PLAIN, 12));
+		scrollPane.setViewportView(txtResultat);
+	}
+	
+	/**
+	 * Action associee au bouton "Choisir"
+	 * @author Vincent Lacasse
+	 *
+	 */
+	private class ActionChoisir extends AbstractAction {
+		ActionChoisir() {
+			super("Choisir");
+		}
 		
-		btnChoisir.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int returnVal;
-				File nom;
-	    		JFileChooser fileChooser = new JFileChooser();
-	    		fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-			    returnVal = fileChooser.showOpenDialog(null);
-			    if (returnVal == JFileChooser.APPROVE_OPTION) {   
-			    	nom = new File(fileChooser.getSelectedFile().getPath());
-			    	base = new Repertoire(null, nom);
-			    	txtrResultat.setText(base.toString());
-	    		}
-			}
-		});
+		public void actionPerformed(ActionEvent e) {
+			
+    			JFileChooser fileChooser = new JFileChooser();
+    			fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+    			
+		    int returnVal = fileChooser.showOpenDialog(null);
+		    
+		    if (returnVal == JFileChooser.APPROVE_OPTION) {   
+		    		File nom = new File(fileChooser.getSelectedFile().getPath());
+		    		
+		    		// L'arbre est cree avec cet appel du constructeur de Repertoire
+		    		Noeud base = new Repertoire(nom);
+		    		
+		    		// Afficher le contenu de la structure Composite
+		    		txtResultat.setText(base.toString());
+    			}
+		}
+	}
+	
+	/**
+	 * Action associee au bouton "Fermer"
+	 * @author Vincent Lacasse
+	 *
+	 */
+	private class ActionFermer extends AbstractAction {
+		ActionFermer() {
+			super("Fermer");
+		}
 		
-		btnFermer.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
-			}
-		});
+		public void actionPerformed(ActionEvent e) {
+			System.exit(0);
+		}
 	}
 }

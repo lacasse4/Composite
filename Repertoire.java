@@ -9,18 +9,23 @@ public class Repertoire extends Noeud {
 	
 	private List<Noeud> enfants;
 
-	public Repertoire(Noeud parent, File nom) {
-		super(parent, nom);
+	public Repertoire(File nom) {
+		super(nom);
 		enfants = new ArrayList<Noeud>();
 		getEnfants();
 	}
 	
 	private void getEnfants() {
-		for (File f : nom.listFiles()) {
-			if (f.isDirectory()) 
-				enfants.add(new Repertoire(this, f));
-			else 
-				enfants.add(new Fichier(this, f));
+		Noeud noeud;
+		
+		for (File file : nom.listFiles()) {
+			if (file.isDirectory()) {
+				noeud = new Repertoire(file);
+			}
+			else {
+				noeud = new Fichier(file);
+			}
+			enfants.add(noeud);
 		}
 	}
 	
@@ -29,12 +34,16 @@ public class Repertoire extends Noeud {
 		Iterator<Noeud> i = enfants.iterator();
 
 		// ajouter le nom du répertoire
-		sb.append("R: " + nom.toString() + "\n");
+		sb.append(addSpace() + "R: " + nom.toString() + "\n");
+		
+		niveau++;
 		
 		// ajouter le nom des enfants
 		while (i.hasNext()) {
 			sb.append(i.next().toString());
 		}
+		
+		niveau--;
 		
 		return sb.toString();
 	}
